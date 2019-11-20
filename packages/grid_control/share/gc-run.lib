@@ -507,7 +507,7 @@ url_copy_single_srm() {
 	RESULT=1
 	if [ "$(basename `getcommand gfal-copy`)" == "gfal-copy" ]; then
 		ARGS=""
-		print_and_eval "gfal-copy" $ARGS "-v -n 1" "$1" "$2"
+		print_and_eval "gfal-copy" $ARGS "-v -p -n 1" "$1" "$2"
 		RESULT=$?
 		if [ $RESULT -gt 0 ]; then
 			url_rm "$2" # continue later with srmcp

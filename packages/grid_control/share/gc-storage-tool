@@ -387,7 +387,7 @@ sc_ls_s3()
 sc_copy()
 {
 	sc_debug_helper "$FUNCNAME" "$@"
-	GFAL_COPY_ARGS="--abort-on-failure -n 1"
+	GFAL_COPY_ARGS="--abort-on-failure -p -n 1"
 	case "$2" in # prepare target dir
 		"file://"*)
 			mkdir -p $(dirname ${2#file://}) || sc_fail "target_dir_failed" "Unable to create target directory";;
@@ -434,7 +434,7 @@ sc_copy()
 			case "$2" in
 				"file://"*)
 					sc_try_copy sc_call "globus-url-copy" "$1" "$2" || \
-					sc_try_copy sc_call "gfal-copy" "$1" "$2" || \
+					sc_try_copy sc_call "gfal-copy" "$GFAL_COPY_ARGS" "$1" "$2" || \
 					sc_try_copy sc_call "lcg-cp" "$1" "$2" || \
 					sc_try_copy sc_call "srmcp" "$1" "$2" || \
 					sc_try_copy sc_call "arccp" "$1" "$2" || \
@@ -534,7 +534,7 @@ sc_copy()
 					sc_fail "local_ftp_copy_failed";;
 				"gsiftp://"*)
 					sc_try_copy sc_call "globus-url-copy" "$1" "$2" || \
-					sc_try_copy sc_call "gfal-copy" "$1" "$2" || \
+					sc_try_copy sc_call "gfal-copy" "$GFAL_COPY_ARGS" "$1" "$2" || \
 					sc_try_copy sc_call "lcg-cp" "$1" "$2" || \
 					sc_try_copy sc_call "srmcp" "$1" "$2" || \
 					sc_try_copy sc_call "arccp" "$1" "$2" || \
