@@ -447,6 +447,8 @@ url_exists() {
 			print_and_eval "$EXCMD" "$1";;
 		"file://"*)
 			print_and_eval " " "test" "-s ${1#file://}";;
+		"root://"*)
+			print_and_eval "xrdfs ${1/store*/} stat /store${1#*store}";;
 		*)
 			echo "Unsupported URL: $1" >&2 && fail 106;;
 	esac
@@ -535,6 +537,13 @@ url_copy_connector() {
 url_copy_single() {
 	debug_helper $FUNCNAME "$@"
 	case "$1" in
+                "root://"*)
+			case "$2" in
+				"file://"*)
+					print_and_eval "`getcommand xrdcopy`" "-fpr" "${1} $(dirname ${2#file:///})";;
+				*)
+					print_and_eval "url_copy_connector" "$1" "$2";;
+			esac;;
 		"rfio://"*)
 			case "$2" in
 				"file://"*)
@@ -565,6 +574,8 @@ url_copy_single() {
 			case "$2" in
 				"rfio://"*)
 					print_and_eval "`getcommand rfcp`" "${1#file://} ${2#rfio://}";;
+				"root://"*)
+					print_and_eval "`getcommand xrdcopy`" "-fpr" "${1#file://} ${2}";;
 				"gsiftp://"*)
 					print_and_eval "`getcommand globus-url-copy`" "$1 $2";;
 				"srm://"*)
@@ -596,7 +607,7 @@ url_copy() {
 	SOURCE_FILES=""
 	SOURCE_URL="$1"
 	case "$SOURCE_URL" in
-		"rfio://"* | "gsiftp://"* | "srm://"* | "dir://"*)
+		"rfio://"* | "gsiftp://"* | "srm://"* | "dir://"* | "root://"*)
 			# copy from SE
 			SOURCE_URL="`echo "$SOURCE_URL" | sed -e 's@dir://@file://@'`"
 			if [[ "$FILENAMES" == *\** ]]; then
@@ -630,7 +641,7 @@ url_copy() {
 
 	TARGET_URL="$2"
 	case "$TARGET_URL" in
-		"rfio://"* | "gsiftp://"* | "srm://"* | "dir://"*)
+		"rfio://"* | "gsiftp://"* | "srm://"* | "dir://"* | "root://"*)
 			# copy to SE
 			TARGET_PATTERN="${SE_OUTPUT_PATTERN:-@X@}"
 			TARGET_URL="`echo "$TARGET_URL" | sed -e 's@dir://@file://@'`"

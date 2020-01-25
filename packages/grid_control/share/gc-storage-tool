@@ -388,6 +388,7 @@ sc_copy()
 {
 	sc_debug_helper "$FUNCNAME" "$@"
 	GFAL_COPY_ARGS="--abort-on-failure -p -n 1"
+	ROOT_COPY_ARGS="-fpr"
 	case "$2" in # prepare target dir
 		"file://"*)
 			mkdir -p $(dirname ${2#file://}) || sc_fail "target_dir_failed" "Unable to create target directory";;
@@ -524,7 +525,7 @@ sc_copy()
 					sc_try_copy sc_call "gfal-copy" "$GFAL_COPY_ARGS" "$1" "$2" || \
 					sc_try_copy sc_call "dccp" "$1" "$2" || \
 					sc_fail "local_dcap_copy_failed";;
-				"eos://"* | "root://"*)
+				"eos://"*)
 					sc_try_copy sc_call "xrdcp" "${1#file://}" "root://${2#eos://}" || \
 					sc_try_copy sc_call "gfal-copy" "$GFAL_COPY_ARGS" "$1" "root://${2#eos://}" || \
 					sc_fail "local_eos_copy_failed";;
@@ -572,6 +573,10 @@ sc_copy()
 					sc_try_copy sc_call "srmcp" -2 -debug=true -streams_num=1 "$1" "$2" || \
 					sc_try_copy sc_call "arccp" "$1" "$2" || \
 					sc_fail "local_srm_copy_failed";;
+				"root://"*)
+                                        echo $1;
+					sc_try_copy sc_call "xrdcopy" "$ROOT_COPY_ARGS" "${1#file://}" "$2" || \
+					sc_fail "local_root_copy_failed";;
 				"file://"*)
 					sc_try_copy sc_call "cp" "${1#file://}" "${2#file://}" || \
 					sc_fail "local_local_copy_failed";;
