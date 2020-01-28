@@ -540,7 +540,7 @@ url_copy_single() {
                 "root://"*)
 			case "$2" in
 				"file://"*)
-					print_and_eval "`getcommand xrdcopy`" "-fpr" "${1} $(dirname ${2#file:///})";;
+					print_and_eval "`getcommand xrdcopy`" "-fp" "${1} $(dirname ${2#file:///})";;
 				*)
 					print_and_eval "url_copy_connector" "$1" "$2";;
 			esac;;
