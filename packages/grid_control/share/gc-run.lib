@@ -575,7 +575,7 @@ url_copy_single() {
 				"rfio://"*)
 					print_and_eval "`getcommand rfcp`" "${1#file://} ${2#rfio://}";;
 				"root://"*)
-					print_and_eval "`getcommand xrdcopy`" "-fpr" "${1#file://} ${2}";;
+					print_and_eval "`getcommand xrdcopy`" "-fp" "${1#file://} ${2}";;
 				"gsiftp://"*)
 					print_and_eval "`getcommand globus-url-copy`" "$1 $2";;
 				"srm://"*)
