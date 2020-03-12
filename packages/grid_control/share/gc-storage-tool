@@ -388,7 +388,7 @@ sc_copy()
 {
 	sc_debug_helper "$FUNCNAME" "$@"
 	GFAL_COPY_ARGS="--abort-on-failure -p -n 1"
-	ROOT_COPY_ARGS="-fpr"
+	ROOT_COPY_ARGS="-fp"
 	case "$2" in # prepare target dir
 		"file://"*)
 			mkdir -p $(dirname ${2#file://}) || sc_fail "target_dir_failed" "Unable to create target directory";;
