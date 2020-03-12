@@ -413,12 +413,21 @@ sc_copy()
 				*)
 					sc_copy_connector "$1" "$2";;
 			esac;;
-		"eos://"* | "root://"*)
+		"eos://"*)
 			case "$2" in
 				"file://"*)
 					sc_try_copy sc_call "xrdcp" "root://${1#eos://}" "${2#file://}" || \
 					sc_try_copy sc_call "gfal-copy" "$GFAL_COPY_ARGS" "root://${1#eos://}" "$2" || \
 					sc_fail "eos_local_copy_failed";;
+				*)
+					sc_copy_connector "$1" "$2";;
+			esac;;
+		"root://"*)
+			case "$2" in
+				"file://"*)
+					sc_try_copy sc_call "xrdcopy" $ROOT_COPY_ARGS "$1" "${2#file://}" || \
+					sc_try_copy sc_call "gfal-copy" "$GFAL_COPY_ARGS" "$1" "$2" || \
+					sc_fail "root_local_copy_failed";;
 				*)
 					sc_copy_connector "$1" "$2";;
 			esac;;
@@ -886,7 +895,7 @@ sc_rm() # Remove file from storage element - ignore missing files
 			sc_exists "$1" || \
 			sc_call_xrdfs "$1" rm || \
 			sc_call "arcrm" "$1" || \
-			sc_fail "rfio_rm_failed";;
+			sc_fail "root_rm_failed";;
 		"s3://"*)
 			sc_s3_curl_query "DELETE" "$1" "" || \
 			sc_fail "s3_rm_failed";;
