@@ -583,8 +583,8 @@ sc_copy()
 					sc_try_copy sc_call "arccp" "$1" "$2" || \
 					sc_fail "local_srm_copy_failed";;
 				"root://"*)
-                                        echo $1;
 					sc_try_copy sc_call "xrdcopy" "$ROOT_COPY_ARGS" "${1#file://}" "$2" || \
+					sc_try_copy sc_call "gfal-copy" "$GFAL_COPY_ARGS" "$1" "$2" || \
 					sc_fail "local_root_copy_failed";;
 				"file://"*)
 					sc_try_copy sc_call "cp" "${1#file://}" "${2#file://}" || \
