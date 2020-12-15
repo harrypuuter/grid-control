@@ -509,13 +509,9 @@ url_copy_single_local() {
 url_copy_single_srm() {
 	debug_helper $FUNCNAME "$@"
 	RESULT=1
-<<<<<<< HEAD
-	if [ "$(basename `getcommand gfal-copy`)" == "gfal-copy" ]; then
-=======
 	EXCMD="`getcommand lcg-cp gfal-copy`"
 	echo "copy command is $EXCMD"
 	if [ "$(basename $EXCMD)" == "lcg-cp" ]; then
->>>>>>> a219646716522dda41bf8b88c7241c30f3bd385b
 		ARGS=""
 		print_and_eval "gfal-copy" $ARGS "-v -p -n 1" "$1" "$2"
 		RESULT=$?
