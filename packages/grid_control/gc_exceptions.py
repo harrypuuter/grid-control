@@ -1,4 +1,4 @@
-# | Copyright 2015-2017 Karlsruhe Institute of Technology
+# | Copyright 2015-2019 Karlsruhe Institute of Technology
 # |
 # | Licensed under the Apache License, Version 2.0 (the "License");
 # | you may not use this file except in compliance with the License.
@@ -87,4 +87,4 @@ class GCLogHandler(logging.FileHandler):
 		fp.close()
 		logging.FileHandler.emit(self, record)
 		sys.stderr.write('\nIn case this is caused by a bug, please send the log file:\n' +
-			'\t%r\n' % self._fn + 'to grid-control-dev@googlegroups.com\n')
+			'\t%r\n' % self._fn + 'to naf-cms-support@desy.de\n')
