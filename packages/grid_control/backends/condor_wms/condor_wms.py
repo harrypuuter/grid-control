@@ -1,4 +1,4 @@
-# | Copyright 2012-2018 Karlsruhe Institute of Technology
+# | Copyright 2012-2019 Karlsruhe Institute of Technology
 # |
 # | Licensed under the Apache License, Version 2.0 (the "License");
 # | you may not use this file except in compliance with the License.
@@ -90,6 +90,8 @@ class Condor(BasicWMS):
 			bind_kwargs={'tags': [self]}, pargs=('sites', 'sites', lambda: self._pool_host_list))
 		self._wall_time_mode = config.get_enum('wall time mode', WallTimeMode, WallTimeMode.ignore,
 			subset=[WallTimeMode.hard, WallTimeMode.ignore])
+		self._blacklist_nodes = config.get_list(['blacklist nodes'], [], on_change=None)
+		self._user_requirements = config.get('user requirements', '', on_change=None)
 
 	def get_interval_info(self):
 		# overwrite for check/submit/fetch intervals
@@ -190,8 +192,8 @@ class Condor(BasicWMS):
 				_add_list_classad('blacklistSite', blacklist)
 				_add_list_classad('whitelistSite', whitelist)
 			elif req_type == WMS.WALLTIME:
-				if ('walltimeMin' in self._pool_req_dict) and (req_value > 0):
-					jdl_req_str_list.append('%s = %d' % (self._pool_req_dict['walltimeMin'], req_value))
+				if ('walltime' in self._pool_req_dict) and (req_value > 0):
+					jdl_req_str_list.append('%s = %d' % (self._pool_req_dict['walltime'], req_value))
 			elif (req_type == WMS.STORAGE) and req_value:
 				_add_list_classad('requestSEs', req_value)
 			elif (req_type == WMS.MEMORY) and (req_value > 0):
@@ -288,6 +290,18 @@ class Condor(BasicWMS):
 			'Error = ' + os.path.join(workdir, "gc.stderr"),
 			'arguments = %s ' % jobnum
 		]
+
+		requirements = ''
+		if self._user_requirements:
+			requirements = '(%s)' % self._user_requirements
+		if self._blacklist_nodes:
+			if requirements:
+				requirements += ' && '
+			blacklist_nodes = ['Machine != "%s"' % node for node in self._blacklist_nodes]
+			requirements += '(%s)' % ' && '.join(blacklist_nodes)
+		if requirements:
+			jdl_str_list.append('Requirements = (%s)' % requirements)
+
 		jdl_str_list.extend(self._get_jdl_req_str_list(jobnum, task))
 		jdl_str_list.append('Queue\n')
 		return jdl_str_list
